@@ -1,36 +1,89 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tetris Pro</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris Pro</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="game-container">
-    <div class="left-panel">
-        <h2>HOLD</h2>
-        <canvas id="hold" width="120" height="120"></canvas>
+<div class="game-shell">
 
-        <h2>SCORE</h2>
-        <div id="score">0</div>
+    <!-- ================= TOP BAR ================= -->
+    <header class="top-bar">
+        <h1>Tetris Pro: Advanced</h1>
 
-        <h2>LEVEL</h2>
-        <div id="level">1</div>
+        <div class="controls">
+            <label class="toggle">
+                <input id="hardModeToggle" type="checkbox">
+                <span>Modo difícil</span>
+            </label>
 
-        <h2>LINES</h2>
-        <div id="lines">0</div>
-    </div>
+            <button id="restartBtn" type="button">
+                Reiniciar
+            </button>
 
-    <canvas id="board" width="300" height="600"></canvas>
+            <button id="muteBtn" type="button">
+                🔊 Sonido
+            </button>
+        </div>
+    </header>
 
-    <div class="right-panel">
-        <h2>NEXT</h2>
-        <canvas id="next" width="120" height="300"></canvas>
+    <!-- ================= GAME AREA ================= -->
+    <div class="game-container">
+
+        <!-- -------- LEFT PANEL -------- -->
+        <div class="left-panel panel">
+            <h2>HOLD</h2>
+            <canvas id="hold" width="120" height="120"></canvas>
+
+            <h2>PUNTOS</h2>
+            <div id="score">0</div>
+
+            <h2>RÉCORD</h2>
+            <div id="highScore">0</div>
+
+            <h2>NIVEL</h2>
+            <div id="level">1</div>
+
+            <h2>LÍNEAS</h2>
+            <div id="lines">0</div>
+        </div>
+
+        <!-- -------- GAME BOARD -------- -->
+        <div class="board-wrap">
+            <canvas id="board" width="300" height="600"></canvas>
+
+            <!-- efectos -->
+            <div id="overlay" class="overlay hidden"></div>
+            <div id="flash" class="flash"></div>
+        </div>
+
+        <!-- -------- RIGHT PANEL -------- -->
+        <div class="right-panel panel">
+            <h2>SIGUIENTES</h2>
+            <canvas id="next" width="120" height="300"></canvas>
+
+            <p class="hint">
+                <strong>Controles:</strong>
+
+                ⬅️ ➡️ mover
+
+                ⬆️ rotar
+
+                ⬇️ bajar
+
+                Espacio = hard drop
+
+                C = guardar
+            </p>
+        </div>
+
     </div>
 </div>
 
 <script src="game.js"></script>
+
 </body>
 </html>
