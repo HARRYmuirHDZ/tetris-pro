@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tetris Pro</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="game-container">
+    <div class="left-panel">
+        <h2>HOLD</h2>
+        <canvas id="hold" width="120" height="120"></canvas>
+
+        <h2>SCORE</h2>
+        <div id="score">0</div>
+
+        <h2>LEVEL</h2>
+        <div id="level">1</div>
+
+        <h2>LINES</h2>
+        <div id="lines">0</div>
+    </div>
+
+    <canvas id="board" width="300" height="600"></canvas>
+
+    <div class="right-panel">
+        <h2>NEXT</h2>
+        <canvas id="next" width="120" height="300"></canvas>
+    </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
