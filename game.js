@@ -1,5 +1,5 @@
 // =====================
-// TETRIS PRO (simple)
+// TETRIS PRO + OVERLAY (PAUSE/Game Over)
 // =====================
 
 const COLS = 10;
@@ -24,16 +24,33 @@ const scoreEl = document.getElementById("score");
 const levelEl = document.getElementById("level");
 const linesEl = document.getElementById("lines");
 
-let board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+const overlayEl = document.getElementById("overlay");
+const overlayTitleEl = document.getElementById("overlayTitle");
+const overlayHintEl = document.getElementById("overlayHint");
 
+let board;
+let score;
+let level;
+let linesCleared;
+let dropSpeed;
+
+let currentPiece;
+let holdPiece;
+let canHold;
+let nextQueue;
+
+let paused = false;
+let isGameOver = false;
+
+// ---------- data ----------
 const COLORS = {
   I: "#00FFFF",
-  J: "#0000FF",
-  L: "#FF7F00",
-  O: "#FFFF00",
-  S: "#00FF00",
-  T: "#800080",
-  Z: "#FF0000",
+  J: "#3b6cff",
+  L: "#ff9b35",
+  O: "#ffe04a",
+  S: "#39ff6b",
+  T: "#b04cff",
+  Z: "#ff3b3b",
 };
 
 const SHAPES = {
@@ -64,16 +81,6 @@ const SHAPES = {
   ],
 };
 
-let score = 0;
-let level = 1;
-let linesCleared = 0;
-let dropSpeed = 1000;
-
-let currentPiece = null;
-let holdPiece = null;
-let canHold = true;
-let nextQueue = [];
-
 // ---------- helpers ----------
 function cloneShape(shape) {
   return shape.map((r) => r.slice());
@@ -91,6 +98,32 @@ function randomPiece() {
 
 function clonePiece(p) {
   return { type: p.type, shape: cloneShape(p.shape), x: p.x, y: p.y };
+}
+
+// ---------- overlay ----------
+function showOverlay(title, hint) {
+  overlayTitleEl.textContent = title;
+  overlayHintEl.textContent = hint;
+  overlayEl.classList.remove("hidden");
+  overlayEl.setAttribute("aria-hidden", "false");
+}
+
+function hideOverlay() {
+  overlayEl.classList.add("hidden");
+  overlayEl.setAttribute("aria-hidden", "true");
+}
+
+function setPaused(nextState) {
+  if (isGameOver) return;
+  paused = nextState;
+  if (paused) showOverlay("PAUSED", "Press P to resume");
+  else hideOverlay();
+}
+
+function triggerGameOver() {
+  isGameOver = true;
+  paused = false;
+  showOverlay("GAME OVER", "Press R to restart");
 }
 
 // ---------- draw main ----------
@@ -114,7 +147,7 @@ function drawPiece(piece, ghost = false) {
   piece.shape.forEach((row, y) => {
     row.forEach((val, x) => {
       if (!val) return;
-      if (ghost) ctx.globalAlpha = 0.2;
+      if (ghost) ctx.globalAlpha = 0.22;
       drawBlock(piece.x + x, piece.y + y, COLORS[piece.type]);
       ctx.globalAlpha = 1;
     });
@@ -135,7 +168,6 @@ function drawMiniPiece(ctx2, piece, offsetRows = 0) {
   const w = shape[0].length;
   const h = shape.length;
 
-  // center within 6x6 mini grid
   const startX = Math.floor((6 - w) / 2);
   const startY = Math.floor((6 - h) / 2) + offsetRows;
 
@@ -157,7 +189,6 @@ function renderHold() {
 
 function renderNext() {
   clearMini(nextCtx, nextCanvas.width, nextCanvas.height);
-  // show 3 next pieces, each in its own 6-row slot
   for (let i = 0; i < Math.min(3, nextQueue.length); i++) {
     drawMiniPiece(nextCtx, nextQueue[i], i * 6);
   }
@@ -196,7 +227,7 @@ function merge(piece) {
 }
 
 function rotate(matrix) {
-  // rotate clockwise
+  // clockwise
   return matrix[0].map((_, i) => matrix.map((row) => row[i])).reverse();
 }
 
@@ -228,18 +259,13 @@ function ensureQueue() {
   while (nextQueue.length < 5) nextQueue.push(randomPiece());
 }
 
-function gameOver() {
-  alert("GAME OVER");
-  document.location.reload();
-}
-
 function spawnPiece() {
   ensureQueue();
   currentPiece = nextQueue.shift();
   nextQueue.push(randomPiece());
   canHold = true;
 
-  if (collision(currentPiece)) gameOver();
+  if (collision(currentPiece)) triggerGameOver();
 
   renderNext();
   renderHold();
@@ -272,7 +298,7 @@ function hold() {
     currentPiece.x = 3;
     currentPiece.y = 0;
 
-    if (collision(currentPiece)) gameOver();
+    if (collision(currentPiece)) triggerGameOver();
   }
 
   canHold = false;
@@ -280,8 +306,46 @@ function hold() {
   renderNext();
 }
 
+// ---------- reset ----------
+function resetGame() {
+  board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+  score = 0;
+  level = 1;
+  linesCleared = 0;
+  dropSpeed = 1000;
+
+  currentPiece = null;
+  holdPiece = null;
+  canHold = true;
+  nextQueue = [];
+
+  paused = false;
+  isGameOver = false;
+  hideOverlay();
+
+  spawnPiece();
+  updateHud();
+}
+
 // ---------- input ----------
 document.addEventListener("keydown", (e) => {
+  const key = e.key.toLowerCase();
+
+  // PAUSE toggle (P)
+  if (key === "p") {
+    setPaused(!paused);
+    return;
+  }
+
+  // RESTART (R)
+  if (key === "r") {
+    resetGame();
+    return;
+  }
+
+  // if paused or game over, don't allow gameplay keys
+  if (paused || isGameOver) return;
+
   if (!currentPiece) return;
 
   if (e.key === "ArrowLeft") {
@@ -310,7 +374,7 @@ document.addEventListener("keydown", (e) => {
     hardDrop();
   }
 
-  if (e.key.toLowerCase() === "c") {
+  if (key === "c") {
     hold();
   }
 });
@@ -322,33 +386,42 @@ let lastTime = 0;
 function update(time = 0) {
   const delta = time - lastTime;
   lastTime = time;
-  dropCounter += delta;
 
-  if (dropCounter > dropSpeed) {
-    currentPiece.y++;
-    if (collision(currentPiece)) {
-      currentPiece.y--;
-      merge(currentPiece);
-      clearLines();
-      spawnPiece();
+  // still draw even when paused/gameover, but do not advance gameplay
+  if (!paused && !isGameOver) {
+    dropCounter += delta;
+
+    if (dropCounter > dropSpeed) {
+      currentPiece.y++;
+      if (collision(currentPiece)) {
+        currentPiece.y--;
+        merge(currentPiece);
+        clearLines();
+        spawnPiece();
+      }
+      dropCounter = 0;
     }
+  } else {
+    // prevent "fast drop" after unpausing
     dropCounter = 0;
   }
 
   drawBoard();
 
-  // ghost piece
-  const ghost = clonePiece(currentPiece);
-  while (!collision(ghost)) ghost.y++;
-  ghost.y--;
-  drawPiece(ghost, true);
+  if (currentPiece) {
+    // ghost piece
+    const ghost = clonePiece(currentPiece);
+    while (!collision(ghost)) ghost.y++;
+    ghost.y--;
+    drawPiece(ghost, true);
 
-  drawPiece(currentPiece);
+    drawPiece(currentPiece);
+  }
+
   updateHud();
-
   requestAnimationFrame(update);
 }
 
 // start
-spawnPiece();
+resetGame();
 update();

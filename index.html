@@ -23,11 +23,28 @@
       <div id="lines">0</div>
     </div>
 
-    <canvas id="board"></canvas>
+    <div class="board-wrap">
+      <canvas id="board"></canvas>
+
+      <!-- OVERLAY (PAUSA / GAME OVER) -->
+      <div id="overlay" class="overlay hidden" aria-hidden="true">
+        <div class="overlay-box">
+          <div id="overlayTitle" class="overlay-title">PAUSED</div>
+          <div id="overlayHint" class="overlay-hint">Press P to resume</div>
+        </div>
+      </div>
+    </div>
 
     <div class="right-panel">
       <h2>NEXT</h2>
       <canvas id="next" width="120" height="360"></canvas>
+
+      <div class="hotkeys">
+        <div><b>P</b> Pause</div>
+        <div><b>R</b> Restart</div>
+        <div><b>C</b> Hold</div>
+        <div><b>Space</b> Hard drop</div>
+      </div>
     </div>
   </div>
 

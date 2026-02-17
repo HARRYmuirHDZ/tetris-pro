@@ -1,66 +1,145 @@
-:root {
-  --bg1: #0f0f0f;
-  --bg2: #1a1a1a;
-  --panel: rgba(0, 255, 255, 0.08);
-  --cyan: cyan;
-  --text: #eaf6ff;
+:root{
+  --bg1:#080c1a;
+  --bg2:#040611;
+  --panel: rgba(68,240,255,.08);
+  --cyan:#44f0ff;
+  --text:#ebf4ff;
 }
 
-* { box-sizing: border-box; }
+*{ box-sizing:border-box; }
 
-body {
-  background: linear-gradient(135deg, var(--bg1), var(--bg2));
-  color: var(--text);
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+  color:var(--text);
   font-family: Arial, Helvetica, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
+  background:
+    radial-gradient(circle at 20% 10%, #1b2a4d, #080c1a 55%, #03050d);
 }
 
-.game-container {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  padding: 16px;
-  border: 1px solid rgba(0, 255, 255, 0.25);
-  border-radius: 14px;
-  background: rgba(0,0,0,0.25);
-  box-shadow: 0 0 30px rgba(0,255,255,0.12);
+.game-container{
+  display:flex;
+  gap:20px;
+  align-items:center;
+  padding:16px;
+  border-radius:16px;
+  border:1px solid rgba(68,240,255,.25);
+  background: rgba(0,0,0,.25);
+  box-shadow: 0 0 30px rgba(68,240,255,.12);
 }
 
-canvas {
-  background: #111;
-  border: 2px solid #333;
-  box-shadow: 0 0 20px rgba(0,255,255,0.2);
-}
-
-.left-panel, .right-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  min-width: 140px;
-  padding: 10px;
-  border-radius: 12px;
+/* panels */
+.left-panel,.right-panel{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  min-width:160px;
+  padding:12px;
+  border-radius:14px;
   background: var(--panel);
+  border: 1px solid rgba(68,240,255,.18);
 }
 
-h2 {
-  margin: 6px 0 0;
-  font-size: 14px;
+h2{
+  margin:6px 0 0;
+  font-size:14px;
   color: var(--cyan);
-  letter-spacing: 1px;
+  letter-spacing:1px;
 }
 
-#score, #level, #lines {
-  font-size: 22px;
-  font-weight: bold;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(0, 255, 255, 0.25);
-  background: rgba(0,0,0,0.35);
-  min-width: 90px;
-  text-align: center;
+#score,#level,#lines{
+  font-size:22px;
+  font-weight:800;
+  padding:8px 12px;
+  border-radius:12px;
+  border:1px solid rgba(68,240,255,.25);
+  background: rgba(0,0,0,.35);
+  min-width:100px;
+  text-align:center;
+}
+
+canvas{
+  background: linear-gradient(180deg, #0d1428, #060a14);
+  border:2px solid rgba(68,240,255,.25);
+  box-shadow: 0 0 22px rgba(68,240,255,.2);
+}
+
+/* board wrapper so overlay sits on top */
+.board-wrap{
+  position:relative;
+}
+
+/* overlay like your screenshot */
+.overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  pointer-events:none;
+}
+
+.overlay.hidden{
+  display:none;
+}
+
+.overlay::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,.55);
+}
+
+.overlay-box{
+  position:relative;
+  padding:22px 26px;
+  border-radius:14px;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,.07),
+      rgba(255,255,255,.07) 8px,
+      rgba(255,255,255,.03) 8px,
+      rgba(255,255,255,.03) 16px
+    ),
+    rgba(10,16,30,.85);
+  border:2px solid rgba(255,255,255,.15);
+  box-shadow: 0 10px 30px rgba(0,0,0,.6);
+  text-align:center;
+}
+
+.overlay-title{
+  font-size:34px;
+  font-weight:900;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color: #eaf6ff;
+  text-shadow:
+    0 2px 0 rgba(0,0,0,.8),
+    0 0 18px rgba(68,240,255,.25);
+}
+
+.overlay-hint{
+  margin-top:10px;
+  font-size:13px;
+  opacity:.9;
+  letter-spacing:1px;
+  color: rgba(235,244,255,.9);
+}
+
+/* small hotkeys */
+.hotkeys{
+  margin-top:6px;
+  width:100%;
+  font-size:12px;
+  opacity:.9;
+  line-height:1.6;
+}
+.hotkeys b{
+  color: var(--cyan);
 }
